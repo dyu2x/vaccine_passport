@@ -1,9 +1,6 @@
-
-# Vaccine Passport Project
-
-## Table of Contents<a name="table"></a>
+# Table of Contents<a name="table"></a>
 1. [Postgres database schema](#introduction)
-2. Installation
+2. [Installation](#installation)
     1. [Raw file](#setup)
     2. [ERD](#erd)
     3. [Database Installation](#database_setup)
@@ -13,7 +10,7 @@
             - [Provider Class](#provider_class)
             - [Facility Class](#facility_class)
             - [Passport Class](#passport_class)
-            - [Facility-Providers](#facility_provider)
+            - [Facility-Providers](#facilities_providers)
         2.  API Files
             - [Accounts](#accounts.py)
             - [Facilities](#facilities.py)
@@ -28,45 +25,70 @@
             - [Facilities](#facilities)
             - [Accounts](#accounts)
             - [Passports](#passports)
-    6. [Start Virtual Environtment](#startv)
-    7. [Start Server](#start)
-3. Other Documentation
-    1. [Reset Primary Key](#reset)
-    2. [Load faker data](#faker)
 3. [Contributing](#contributing)
 4. [License](#license)
-5. [Credits](#credit)
+5. [Credits](#Credits)
 
-### Postgres database schema <a name="introduction"></a>[&#8593;](#table)
+## Vaccine Passport Project
+
+### Postgres database schema
 
 The Vaccine Passport database has 1 fact table which is the Passports, and 3 dimensional tables which are accounts, 
 facilities, and providers.
 
-![Alt text](https://www.dropbox.com/s/b5dlyo1nykr1029/Vaccine_Passport_db_schema.png?raw=true "db Schema")
+![Alt text](https://www.dropbox.com/s/a3n733wkkq07z9m/vaccine_passport_schema.png?raw=true "db Schema")
 
-## Installation
+## Installation [&#8593;](#table)
 
-### Setup: <a name="setup"></a>[&#8593;](#table)
+### Setup: [&#8593;](#table)
 
 We have included the raw files for this project (project_raw.zip)
 - unzip this file on your computer.
 - make sure that your virtual environment is running
 
-### ERD: <a name="erd"></a>[&#8593;](#table)
+### ERD: [&#8593;](#table)
 
-![Alt text](https://www.dropbox.com/s/736jnw1v1utt1z0/vaccine_passport.png?raw=true "ERD") 
+![Alt text](https://www.dropbox.com/s/4l9s7jqd6yzs2ij/vaccine_passport.drawio_django.png?raw=true "ERD") 
 
 ### Database Setup<a name="database_setup"></a>: [&#8593;](#table)
++ Virtual Environment
+    - Install 
+
+        ```bash
+        python -m venv venv
+        ```    
+
+    - Activate
+
+        ```bash
+        . venv/bin/activate
+        ``` 
+
++ Activate docker
+    - run 
+
+        ```bash
+        docker compose up -d
+        ```           
 
 + Database creation:
 	- Create a database name “vaccine_passport” on pgadmin or you can run this command on 
 	
         ```bash
-        % docker exec -i pg_container psql -c 'CREATE DATABASE vaccine_passport;’
+        % docker exec -i pg_container psql -c 'CREATE DATABASE vaccine_passport;'
         ```
+
 	- please check your server if the server has been created or if you did it using the terminal, the 	terminal should return 
 
             CREATE DATABASE
+
++ install these modules if needed:
+    
+    ```bash
+    pip install flask
+    pip install Flask-Migrate
+    pip install psycopg2-binary 
+    ```
 
 
 + loading Tables and records.
@@ -173,10 +195,6 @@ on Terminal
 
 > This will create a Providers table on the vaccine_provider database
 
-```bash 
-% flask db migrate
-```
-
 on models.py
 #### Create Facility Class<a name="facility_class"></a> [&#8593;](#table)
 
@@ -233,70 +251,35 @@ exclude (...)
 ...
 
 class Passport(db.Model):
-   __tablename__ = 'passports'
-   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-   date_administered1 = db.Column(
-       db.Date,
-       default=datetime.datetime.utcnow,
-       nullable=False
-   )
-   date_administered2 = db.Column(
-       db.Date
-   )
-   date_administered3 = db.Column(
-       db.Date
-   )
-   provider_id1 = db.Column(db.Integer, db.ForeignKey(
-       'providers.id'))
-   provider_id2 = db.Column(db.Integer, db.ForeignKey(
-       'providers.id'), nullable=True)
-   provider_id3 = db.Column(db.Integer, db.ForeignKey(
-       'providers.id'), nullable=True)
-   account_id = db.Column(db.Integer, db.ForeignKey(
-       'accounts.id'), nullable=False)
-   facility_id1 = db.Column(db.Integer, db.ForeignKey(
-       'facilities.id'))
-   facility_id2 = db.Column(db.Integer, db.ForeignKey(
-       'facilities.id'), nullable=True)
-   facility_id3 = db.Column(db.Integer, db.ForeignKey(
-       'facilities.id'), nullable=True)
- 
-    # uncomment __init__ before using seed.py and comment after use
-    # def __init__(self, provider_id1: int, date_administered1: int, date_administered2: int, date_administered3: int, provider_id2: int, provider_id3: int, account_id: int, facility_id1: int, facility_id2: int, facility_id3: int):
+    __tablename__ = 'passports'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date_administered = db.Column(
+        db.Date,
+        default=datetime.datetime.utcnow,
+        nullable=False
+    )
+    description = db.Column(db.String(128), nullable=False)
+    provider_id = db.Column(db.Integer, db.ForeignKey(
+        'providers.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey(
+        'accounts.id'), nullable=False)
+    facility_id = db.Column(db.Integer, db.ForeignKey(
+        'facilities.id'))
 
-    #     self.account_id = account_id
-    #     self.provider_id1 = provider_id1
-    #     self.facility_id1 = facility_id1
-    #     self.provider_id2 = provider_id2
-    #     self.facility_id2 = facility_id2
-    #     self.provider_id3 = provider_id3
-    #     self.facility_id3 = facility_id3
-    #     self.date_administered1 = date_administered1 
-    #     self.date_administered2 = date_administered2
-    #     self.date_administered3 = date_administered3
-
-    # place comment on me if the first __init___ func is in use
-    def __init__(self, provider_id1: int, provider_id2: int, provider_id3: int, account_id: int, facility_id1: int, facility_id2: int, facility_id3: int): 
+    def __init__(self, provider_id: int, account_id: int, facility_id: int, description: str):
         self.account_id = account_id
-        self.provider_id1 = provider_id1
-        self.facility_id1 = facility_id1
-        self.provider_id2 = provider_id2
-        self.facility_id2 = facility_id2
-        self.provider_id3 = provider_id3
-        self.facility_id3 = facility_id3
- 
-   def serialize(self):
-       return {
-           'account_id': self.account_id,
-           'provider_id1': self.provider_id1,
-           'facility_id1': self.facility_id1,
-           'date_administered1': self.date_administered1,
-           'provider_id2': self.provider_id2,
-           'facility_id2': self.facility_id2,
-           'date_administered2': self.date_administered2,
-           'provider_id3': self.provider_id3,
-           'facility_id3': self.facility_id3,
-           'date_administered3': self.date_administered3,
+        self.description = description
+        self.provider_id = provider_id
+        self.facility_id = facility_id
+
+    def serialize(self):
+        return {
+            'account_id': self.account_id,
+            'description': self.description,
+            'provider_id': self.provider_id,
+            'facility_id': self.facility_id,
+            'date_administered': self.date_administered,
+
         }
 
 ```
@@ -317,16 +300,16 @@ on Terminal
 
 on models.py
 
-Then insert facility_providers code in between Facility and Provider class.
+Then insert facilities_providers code in between Facility and Provider class.
 
-#### facility providers<a name="facility_provider"></a> [&#8593;](#table)
+#### facility providers<a name="facilit_provider"></a> [&#8593;](#table)
 exclude (...)
 
 ```python
 ...
 
-facility_provider_table = db.Table(
-   'facility_provider',
+facilities_providers_table = db.Table(
+   'facilities_providers',
    db.Column(
        'provider_id', db.Integer,
        db.ForeignKey('providers.id'),
@@ -355,7 +338,7 @@ on Terminal
 % flask db upgrade
 ```
 
-> This will create a facility_providers table on the vaccine_provider database
+> This will create a facilities_providers table on the vaccine_provider database
 
 on models.py
 
@@ -365,10 +348,10 @@ exclude (...)
 ```python
 ...
 
-   facility_providers = db.relationship(
-       'Provider', secondary=facility_providers_table,
+   facilities_providers = db.relationship(
+       'Provider', secondary=facilities_providers_table,
        lazy='subquery',
-       backref=db.backref('facility_providers_list', lazy=True))
+       backref=db.backref('facilities_providers_list', lazy=True))
  
 ...
 ```
@@ -702,6 +685,34 @@ uncomment lines 34 to 38
 
 save
 
+- loading data
+populate the database in sequence 
+    - providers table
+    - facilities table
+    - Accounts then passport
+
+> we are now ready to run the server
+
+on Terminal
+
+```bash 
+% export FLASK_ENV=development
+```
+```bash 
+% flask run
+```
+
+> You should have a similar result
+
+```bash 
+	* Environment:development
+	* Debug mode : on
+	* Running on http://127.0.0.1:5000/ (Press CTRL +C to quit)
+	* Restarting with stat
+	* Debugger is active!
+	* Debugger PIN: 117-779-325
+```
+
 ### Insomnia setup
 
 #### Download Application<a name="download_application"></a>: [&#8593;](#table)
@@ -719,7 +730,7 @@ You can download Insomnia [here](https://insomnia.rest/download). Installation i
 
 #### - Operations:
 
-##### <ins>PROVIDERS</ins> <a name="providers"></a>: [&#8593;](#table)
+##### <ins>PROVIDERS</ins> [&#8593;](#table)
 
 - index
 
@@ -739,7 +750,7 @@ You can download Insomnia [here](https://insomnia.rest/download). Installation i
 
 > this will show the information of the a provider by using the provider id on our index.
 
-##### <ins>FACILTIES</ins> <a name="facilities"></a>: [&#8593;](#table)
+##### <ins>FACILTIES</ins> [&#8593;](#table)
 
 - open_new_facility
 
@@ -775,7 +786,7 @@ You can download Insomnia [here](https://insomnia.rest/download). Installation i
 }
 ```
 
-##### <ins>ACCOUNTS</ins> <a name="accounts"></a>: [&#8593;](#table)
+##### <ins>ACCOUNTS</ins> [&#8593;](#table)
 
 - index
 
@@ -872,7 +883,7 @@ You can download Insomnia [here](https://insomnia.rest/download). Installation i
 "Profile updated!"
 ```
 
-##### <ins>PASSPORTS</ins> <a name="passports"></a>: [&#8593;](#table)
+##### <ins>PASSPORTS</ins> [&#8593;](#table)
 
 - index
 
@@ -918,80 +929,14 @@ You can download Insomnia [here](https://insomnia.rest/download). Installation i
 	"facility_id": 12,
 	"provider_id": 1
 }
-
 ```
 
-### Start Virtual Environment <a name="startv"></a>: [&#8593;](#table)
-
-> make sure that you are on the same path where the vend folder is located prior running the command
-
-on Terminal
-
-```bash 
- . ../venv/bin/activate
-```
-> you should see "(venv)" before the name of your computer on the terminal
-
-### Start Server <a name="start"></a>: [&#8593;](#table)
-> we are now ready to run the server. prior running this command, make sure that you are within the vaccine_passport path. if not, type
-
-on Terminal
-
-```bash 
-% cd vaccine_passport
-```
-
-> if you are already within the vaccine_passport path, type these commands
-
-on Terminal
-
-```bash 
-% export FLASK_ENV=development
-```
-```bash 
-% flask run
-```
-
-> You should have a similar result
-
-![Alt text](https://www.dropbox.com/s/077le1lv0h2tcp7/flask.png?raw=true "flask")
-
-
-
-## Other documentations
-
-### Reset Primary Key to 1 <a name="reset"></a> [&#8593;](#table)
-
-After deleting all data (Passport and Accounts) you can reset the Primary Key to 1
-on your Query tool, type
-
-```bash 
-ALTER SEQUENCE passports_id_seq RESTART WITH 1
-```
-
-> to reset passport primary key
-
-```bash 
-ALTER SEQUENCE accounts_id_seq RESTART WITH 1
-```
-
-> to reset accounts primary key
-
-### Load faker data (Accounts and Passport table)<a name="faker"></a> [&#8593;](#table)
-Must be on the same directory where your seed.py is located
-
-```bash 
-% python3 seed.py
-```
-adter loading the files, Accounts and Passports table are now populated with fake data
-
-
-## Contributing <a name="contributing"></a>: [&#8593;](#table)
+## Contributing [&#8593;](#table)
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 Please make sure to update tests as appropriate. email me, I guess
 
-## License <a name="license"></a>: [&#8593;](#table)
-none at this time
+## License [&#8593;](#table)
 
-## Credits <a name="credit"></a>: [&#8593;](#table)
+
+## Credits [&#8593;](#table)
 Thank you NuCamp for the lessons to create my first program and to Miss Selena Flannery -- Instructor for guidance. The files that created is program is based on the Twitter assignment that we use.
